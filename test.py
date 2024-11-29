@@ -33,7 +33,7 @@ def process_zip(uploaded_file):
                         
                         # Get the file size in bytes
                         file_size = zf.getinfo(file_name).file_size
-                        st.write(f"Filename: {file_name}, Size: {file_size}")
+                        # st.write(f"Filename: {file_name}, Size: {file_size}")
                         # Store the DataFrame and file size in respective dictionaries
                         file_dataframes[file_name] = df
                         file_sizes[file_name] = file_size  # File size in bytes
