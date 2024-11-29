@@ -33,7 +33,7 @@ def process_zip(uploaded_file):
                         
                         # Get the file size in bytes
                         file_size = zf.getinfo(file_name).file_size
-                        
+                        st.write("Filename: " + file_name + " Size: " + file_size)
                         # Store the DataFrame and file size in respective dictionaries
                         file_dataframes[file_name] = df
                         file_sizes[file_name] = file_size  # File size in bytes
@@ -84,9 +84,13 @@ if uploaded_file is not None:
     # Step 2: Process the uploaded ZIP to extract data and file sizes
     file_dataframes, file_sizes = process_zip(uploaded_file)
 
-    files = list(file_dataframes.keys())
-    for file in files:
-        st.write(file)
+    if file_dataframes:
+        selected_file = st.selectbox("Select a file to view:", list(file_dataframes.keys()))
+        
+        # Show the selected DataFrame
+        st.write(f"Displaying Data from: {selected_file}")
+        st.dataframe(file_dataframes[selected_file])  # Display the selected DataFrame
+        
     # final_data = run(file_dataframes, file_sizes)
 
     # #Streamlit web section
