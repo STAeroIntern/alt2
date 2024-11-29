@@ -48,32 +48,32 @@ def process_zip(uploaded_file):
 
 def run(file_dataframes, file_sizes):
         
-        # Step 3: Apply the first filter to the extracted data
-        data_lib = read.run(file_dataframes, file_sizes,func.filter1)
+    # Step 3: Apply the first filter to the extracted data
+    data_lib = read.run(file_dataframes, file_sizes,func.filter1)
+
+    # Step 4: Create a ZIP file for download containing the filtered data
+    #Split the telemetry files if there are double sorties in one files.
+    zip_buffer = split.run(data_lib)
+
+    st.download_button(
+    label="Download All CSVs as ZIP",
+    data=zip_buffer,
+    file_name="split_csvs.zip",
+    mime="application/zip"
+    )
     
-        # Step 4: Create a ZIP file for download containing the filtered data
-        #Split the telemetry files if there are double sorties in one files.
-        zip_buffer = split.run(data_lib)
+    # Step 5: Upload the processed ZIP file for further filtering (second filter)
+    st.subheader("Upload the Processed ZIP(Split CSV files)")
+    processed_zip_file = st.file_uploader("Upload processed ZIP file", type="zip")
 
-        st.download_button(
-        label="Download All CSVs as ZIP",
-        data=zip_buffer,
-        file_name="split_csvs.zip",
-        mime="application/zip"
-        )
-        
-        # Step 5: Upload the processed ZIP file for further filtering (second filter)
-        st.subheader("Upload the Processed ZIP(Split CSV files)")
-        processed_zip_file = st.file_uploader("Upload processed ZIP file", type="zip")
+    if processed_zip_file is not None:
+        # Step 6: Process the uploaded processed ZIP file to extract data
+        second_filtered_data, second_file_sizes = process_zip(processed_zip_file)
 
-        if processed_zip_file is not None:
-            # Step 6: Process the uploaded processed ZIP file to extract data
-            second_filtered_data, second_file_sizes = process_zip(processed_zip_file)
+    #Run the third filter
+    data_lib3 = read.run(second_filtered_data, second_file_sizes,func.filter2)
 
-        #Run the third filter
-        data_lib3 = read.run(second_filtered_data, second_file_sizes,func.filter2)
-
-        return data_lib3 
+    return data_lib3 
 
 
 # def run(source, destination):
@@ -126,17 +126,5 @@ if uploaded_file is not None:
                 #Generate report
                 export.run(final_data)
                 st.success("Report Generated")
-
 else:
-    st.write("File Upload Error")
-
-
-
-
-
-
-
-
-
-
-
+    st.write("No File Uploaded")
