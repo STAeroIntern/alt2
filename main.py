@@ -143,10 +143,10 @@ def log_memory_usage(title):
 
 # Step 1: Upload the ZIP file of unprocessed data
 uploaded_file = st.file_uploader("Upload a ZIP file containing text (CSV) files", type="zip")
-log_memory_usage("First Upload File")
 
 # If a file is uploaded
 if uploaded_file is not None:
+    log_memory_usage("First Upload File")
     # Step 2: Process the uploaded ZIP to extract data and file sizes
     file_dataframes, file_sizes = process_zip(uploaded_file)
     # Step 3: Run filtering (filter1) and split the data
