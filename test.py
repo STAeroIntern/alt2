@@ -151,30 +151,30 @@ if uploaded_file is not None:
     file_dataframes, file_sizes = process_zip(uploaded_file)
     # Step 3: Run filtering (filter1) and split the data
     run(file_dataframes, file_sizes)
-    
-    second_uploaded_file = st.file_uploader("Upload the Split ZIP file containing text (CSV) files", type="zip")
-    if second_uploaded_file is not None:
-        # Log memory usage periodically
-        log_memory_usage("Second Upload File")
-        second_filtered_data, second_file_sizes = process_zip(second_uploaded_file)
-        second_filtered_data = {key[:15]: value for key, value in second_filtered_data.items()}
-        second_file_sizes = {key[:15]: value for key, value in second_file_sizes.items()}
-        # Log memory usage periodically
-        st.write(f"Second filter data keys: {second_filtered_data.keys()}")
-        # Step 2: Apply the second filter (filter2) to the split data
-        final_data = read.run(second_filtered_data, second_file_sizes, func.filter2)
-
-        if final_data is not None:
-            # Cache the final data after processing
-            cached_data = cache_final_data(final_data)
-            # Log memory usage periodically
-            log_memory_usage("Final Data")
-            display_filtered_data(cached_data)
-        else:
-            st.write("No Final Data")
-    else:
-        st.write("No Split File")
 
 else:
     st.write("No File Upload")
 
+
+second_uploaded_file = st.file_uploader("Upload the Split ZIP file containing text (CSV) files", type="zip")
+if second_uploaded_file is not None:
+    # Log memory usage periodically
+    log_memory_usage("Second Upload File")
+    second_filtered_data, second_file_sizes = process_zip(second_uploaded_file)
+    second_filtered_data = {key[:15]: value for key, value in second_filtered_data.items()}
+    second_file_sizes = {key[:15]: value for key, value in second_file_sizes.items()}
+    # Log memory usage periodically
+    st.write(f"Second filter data keys: {second_filtered_data.keys()}")
+    # Step 2: Apply the second filter (filter2) to the split data
+    final_data = read.run(second_filtered_data, second_file_sizes, func.filter2)
+
+    if final_data is not None:
+        # Cache the final data after processing
+        cached_data = cache_final_data(final_data)
+        # Log memory usage periodically
+        log_memory_usage("Final Data")
+        display_filtered_data(cached_data)
+    else:
+        st.write("No Final Data")
+else:
+    st.write("No Split File")
