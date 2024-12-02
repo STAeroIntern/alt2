@@ -104,8 +104,46 @@ def display_filtered_data(cached_data):
             )
             st.success("Report Generated")
 
+        # # Button to generate altitude report
+        # generate = st.button('Generate Report')
+
+        # #Function to generate if the button is pressed
+        # if generate:
+        #     with st.spinner('Wait for it...'):
+        #         #Generate report
+        #         excel_buffer = export.run(cached_data)
+        #         # Provide the download button for the report
+        #         st.download_button(
+        #             label="Download Report (Excel)",
+        #             data=excel_buffer,
+        #             file_name="report.xlsx",
+        #             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        #         )
+        #         st.success("Report Generated")
+
+def log_memory_usage(title):
+    # Get the current memory usage (in MB)
+    memory_info = psutil.virtual_memory()
+    
+    # Display human-readable memory usage information
+    st.write(f"### {title} Memory Usage Information")
+    st.write(f"**Total Memory:** {memory_info.total / (1024 * 1024):,.2f} MB")
+    st.write(f"**Used Memory:** {memory_info.used / (1024 * 1024):,.2f} MB")
+    st.write(f"**Available Memory:** {memory_info.available / (1024 * 1024):,.2f} MB")
+    st.write(f"**Memory Usage (Percentage):** {memory_info.percent}%")
+    
+    # Provide context
+    if memory_info.percent > 80:
+        st.warning("⚠️ Memory usage is high! This could lead to slower performance or crashes.")
+    elif memory_info.percent > 50:
+        st.info("💡 Memory usage is moderate. Keep an eye on it.")
+    else:
+        st.success("✅ Memory usage is at a safe level.")
+
+
 # Step 1: Upload the ZIP file of unprocessed data
 uploaded_file = st.file_uploader("Upload a ZIP file containing text (CSV) files", type="zip")
+log_memory_usage("First Upload File")
 
 # If a file is uploaded
 if uploaded_file is not None:
@@ -113,11 +151,13 @@ if uploaded_file is not None:
     file_dataframes, file_sizes = process_zip(uploaded_file)
     # Step 3: Run filtering (filter1) and split the data
     second_uploaded_file = run(file_dataframes, file_sizes)
-
+    # Log memory usage periodically
+    log_memory_usage("Second Upload File")
     if second_uploaded_file is not None:
         second_filtered_data, second_file_sizes = process_zip(second_uploaded_file)
         second_filtered_data = {key[:15]: value for key, value in second_filtered_data.items()}
         second_file_sizes = {key[:15]: value for key, value in second_file_sizes.items()}
+        # Log memory usage periodically
         st.write(f"Second filter data keys: {second_filtered_data.keys()}")
         # Step 2: Apply the second filter (filter2) to the split data
         final_data = read.run(second_filtered_data, second_file_sizes, func.filter2)
@@ -125,7 +165,8 @@ if uploaded_file is not None:
         if final_data is not None:
             # Cache the final data after processing
             cached_data = cache_final_data(final_data)
-
+            # Log memory usage periodically
+            log_memory_usage("Final Data")
             display_filtered_data(cached_data)
         else:
             st.write("No Final Data")
@@ -134,5 +175,4 @@ if uploaded_file is not None:
 
 else:
     st.write("No File Upload")
-
 
