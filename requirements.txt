@@ -1,8 +1,9 @@
-pandas
-numpy
-plotly
 streamlit
 Pillow
-openpyxl
 configparser
 kaleido
+pandas==1.5.3
+numpy==1.24.0
+plotly==5.8.0
+openpyxl==3.0.10
+kaleido==0.2.1
